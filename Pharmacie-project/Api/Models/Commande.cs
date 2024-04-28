@@ -1,6 +1,6 @@
 namespace Api.Models;
 
-public class Order
+public class Commande
 {
     public Guid Id { get; set; }
 
@@ -9,4 +9,5 @@ public class Order
 
     public DateTime Date { get; set; }
     public bool WithDelivery { get; set; }
+    public ICollection<CommandeProduct> CommandeProducts { get; set; } = null!;   
 }
