@@ -9,4 +9,8 @@ public interface IUserRepo
     Task<User?> FindByUserNameOrEmailAsync(string usernameOrEmail);
     Task<IEnumerable<User>> AllAsync();
     Task<IEnumerable<User>> AllAsync(UserRole role);
+
+    Task<bool> DeleteAsync(User user);
+    Task<User?> GetUserByIdAsync(Guid id);
+    Task<bool> UpdateAsync(User user);
 }

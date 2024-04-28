@@ -13,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddSingleton<IUserRepo, FUserRepo>();
 
+builder.Services.AddScoped<IProductRepo, FProductRepo>();
+builder.Services.AddSingleton<IProductRepo, FProductRepo>();
 // Authentication configuration
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {

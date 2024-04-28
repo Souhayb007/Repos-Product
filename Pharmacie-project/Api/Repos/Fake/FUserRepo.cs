@@ -2,6 +2,7 @@ using Api.Enums;
 using Api.Models;
 using Microsoft.AspNetCore.Identity;
 
+
 namespace Api.Repos.Fake;
 
 public class FUserRepo : IUserRepo
@@ -49,9 +50,19 @@ public class FUserRepo : IUserRepo
         return Task.FromResult(_users.Where(u => u.Role == role).AsEnumerable());
     }
 
+    public Task<bool> DeleteAsync(User user)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<User?> FindByUserNameOrEmailAsync(string usernameOrEmail)
     {
         return Task.FromResult(_users.FirstOrDefault(u => u.Username == usernameOrEmail || u.Email == usernameOrEmail));
+    }
+
+    public Task<User?> GetUserByIdAsync(Guid id)
+    {
+        throw new NotImplementedException();
     }
 
     public Task<bool> SaveAsync(User user)
@@ -70,5 +81,10 @@ public class FUserRepo : IUserRepo
         }
 
         return Task.FromResult(true);
+    }
+
+    public Task<bool> UpdateAsync(User user)
+    {
+        throw new NotImplementedException();
     }
 }

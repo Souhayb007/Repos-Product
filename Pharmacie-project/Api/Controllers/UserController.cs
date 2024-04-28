@@ -18,7 +18,7 @@ public class UserController : Controller
         _userRepo = userRepo;
     }
 
-    [HttpGet("{id}")]
+/*    [HttpGet("{id}")]
     [Admin]
     public async Task<IActionResult> GetById(Guid id)
     {
@@ -28,16 +28,17 @@ public class UserController : Controller
             return NotFound();
         }
         return Ok(users);
-    }
+    }*/
 
-    /*[HttpGet("{role}")]
+    [HttpGet("{role}")]
     [Admin]
     public async Task<IActionResult> Get(UserRole role)
     {
         var users = await _userRepo.AllAsync(role);
 
         return Ok(users);
-    }*/
+    }
+
     [HttpPost]
     [Admin]
     public async Task<IActionResult> createUser(DRegister register)
