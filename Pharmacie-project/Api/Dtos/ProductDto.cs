@@ -12,7 +12,6 @@ namespace Api.Dtos
         public string Image { get; set; } = null!;
         [Required]
         public string Barcode { get; set; } = null!;
-
         [Required]
         public Guid CategoryId { get; set; }
     }

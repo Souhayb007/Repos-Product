@@ -9,5 +9,10 @@ public class Product
     public string Image { get; set; } = null!;
     public string Barcode { get; set; } = null!;
 
+
+    public Category Category { get; set; }
     public Guid CategoryId { get; set; }
+
+    public ICollection<PharmacyProduct> PharmacuProduct { get; set; } = null!;  
+
 }
