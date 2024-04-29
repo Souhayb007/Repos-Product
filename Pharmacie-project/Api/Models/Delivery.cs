@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Api.Models;
 
 public class Delivery
 {
+    
     public Guid Id { get; set; }
 
     public Guid DelivererId { get; set; }

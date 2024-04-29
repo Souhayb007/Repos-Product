@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Api.Models;
 
 public class Pharmacy
@@ -11,5 +13,5 @@ public class Pharmacy
 
     public double Latitude { get; set; }
     public double Longitude { get; set; }
-    public ICollection<PharmacyProduct> pharmacyProduct { get; set; } = null!;  
+    public ICollection <PharmacyProduct> pharmacyProduct { get; set; }  
 }

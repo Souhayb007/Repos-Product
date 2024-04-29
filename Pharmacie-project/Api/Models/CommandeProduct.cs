@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Api.Models;
 
 public class CommandeProduct
 {
+    
     public Guid Id { get; set; }
     public Commande Commande { get; set; }
     public Guid CommandeId { get; set; }

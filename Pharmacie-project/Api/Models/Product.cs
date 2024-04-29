@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Api.Models;
 
 public class Product
@@ -13,6 +15,6 @@ public class Product
     public Category Category { get; set; }
     public Guid CategoryId { get; set; }
 
-    public ICollection<PharmacyProduct> PharmacuProduct { get; set; } = null!;  
+    public ICollection<PharmacyProduct> PharmacyProduct { get; set; } = null!;  
 
 }

@@ -18,17 +18,17 @@ public class UserController : Controller
         _userRepo = userRepo;
     }
 
-/*    [HttpGet("{id}")]
+    [HttpGet("{id}")]
     [Admin]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var users = await _userRepo.GetByIdAsync(id);
-        if(users == null) 
+        var users = await _userRepo.GetUserByIdAsync(id);
+        if (users == null)
         {
             return NotFound();
         }
         return Ok(users);
-    }*/
+    }
 
     [HttpGet("{role}")]
     [Admin]
@@ -60,7 +60,7 @@ public class UserController : Controller
                 return BadRequest();
             }
 
-            return CreatedAtAction(nameof (Get(UserRole)), new { id = user.Id }, user);
+            return CreatedAtAction(nameof (GetById), new { id = user.Id }, user);
         }
 
         // PUT: api/User/{id}
