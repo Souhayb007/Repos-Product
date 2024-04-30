@@ -11,4 +11,5 @@ public class Pharmacy
 
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+    public ICollection<PharmacyProduct> pharmacyProduct { get; set; } = null!;  
 }
