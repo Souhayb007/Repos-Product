@@ -6,12 +6,24 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+<<<<<<< HEAD
+using Microsoft.EntityFrameworkCore;
+=======
+using Api.Data;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
 
+
+>>>>>>> a730b5c73918bc10d205dde2f80119db6dfe952d
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<MyContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("PharmacyDbConnection")));
+
+<<<<<<< HEAD
 builder.Services.AddControllers();
 // Add services to the container.
+=======
+>>>>>>> a730b5c73918bc10d205dde2f80119db6dfe952d
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddSingleton<IUserRepo, FUserRepo>();
 

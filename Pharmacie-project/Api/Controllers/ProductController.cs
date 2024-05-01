@@ -1,285 +1,194 @@
-﻿using Api.Dtos;
-using Api.Models;
-using Api.Repos;
+﻿using Api.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Data;
-using System.Data.Common;
-using System.Reflection.PortableExecutable;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class ProductController : ControllerBase
     {
-        //    private readonly  connectionString;
-        //    public ProductController(IConfiguration configuration)
-        //    {
-        //        connectionString = configuration["ConnectionString:SqlServerDB"];
-        //    }
-        //    private readonly IProductRepo _productRepo;
+        private readonly MyContext _dbContext;
 
-        //    public ProductController(IProductRepo productRepo)
-        //    {
-        //        _productRepo = productRepo;
-        //    }
+        public ProductController(MyContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
+        // GET: api/Product
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        {
+            var products = await _dbContext.Products.ToListAsync();
+            if (products == null || !products.Any())
+            {
+                return NotFound();
+            }
+            return Ok(products);
+        }
 
-        //    [HttpPost]
-        //    public IActionResult CreatProduct(ProductDto productDto) 
-        //    {
-        //        try
-        //        {
-        //            using (var connection = new SqlConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                string sql = "INSERT INTO products " +
-        //                    "(name,Description,Image,CategoryId) VALUES" +
-        //                    "(@name,@Description,@Image,@CategoryId)";
+        // GET: api/Product/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Product>> GetProduct(Guid id)
+        {
+            var product = await _dbContext.Products.FindAsync(id);
 
-        //                using (var command = new SqlCommand(sql, connection))
-        //                {
-        //                    command.Parameters.AddWithValue("@name", productDto.Name);
-        //                    command.Parameters.AddWithValue("@Description", productDto.Description);
-        //                    command.Parameters.AddWithValue("@Image", productDto.Image);
-        //                    command.Parameters.AddWithValue("@CategoryId", productDto.CategoryId);
+            if (product == null)
+            {
+                return NotFound();
+            }
 
-        //                    command.ExecuteNonQuery();
-        //                }
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            ModelState.AddModelError("Product", "sorry but we have an exception");
-        //            return BadRequest(ModelState);
-        //        }
-        //        return Ok();
-        //    }
+            return Ok(product);
+        }
 
-        //    [HttpGet]
-        //    public IActionResult GetProduct() 
-        //    {
-        //        List<Product> products=new List<Product>();
-        //        try
-        //        {
-        //            using (var connection = new SqlConnection(connectionString))
-        //            {
-        //                connection.Open();
-        //                string sql = "SELECT * FROM Product ";
-        //                using (var command = new SqlCommand(sql, connection))
-        //                {
-        //                    using (var reader = command.ExecuteReader())
-        //                    {
-        //                        while (reader.Read())
-        //                        {
-        //                            Product product = new Product();
+        // POST: api/Product
+        [HttpPost]
+        public async Task<ActionResult<Product>> PostProduct(Product product)
+        {
+            _dbContext.Products.Add(product);
+            await _dbContext.SaveChangesAsync();
 
-        //                            product.Id = reader.GetGuid(0);
-        //                            product.Name = reader.GetString(1);
-        //                            product.Description = reader.GetString(2);
-        //                            product.Image = reader.GetString(3);
-        //                            product.CategoryId = reader.GetGuid(4);
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
+        }
 
-        //                            products.Add(product);
-        //                        }
-        //                    }
-        //                }
+        // PUT: api/Product/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutProduct(Guid id, Product product)
+        {
+            if (id != product.Id)
+            {
+                return BadRequest();
+            }
 
+            _dbContext.Entry(product).State = EntityState.Modified;
 
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            ModelState.AddModelError("Product", "sorry but we have an exception");
-        //            return BadRequest(ModelState);
-        //        }
-        //        return Ok(products);
-        //    }
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
+            return NoContent();
+        }
 
-        //    [HttpGet("{id}")]
-        //    public IActionResult GetProduct(int id) 
-        //    {
-        //        Product product = new Product();
-        //        try
-        //        {
-        //            using (var connection = new SqlConnection(connectionString))
-        //            {
-        //                connection.Open();
+        // DELETE: api/Product/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(Guid id)
+        {
+            var product = await _dbContext.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
 
-        //                string sql = "SELECT * FROM Product  WHERE id=@id";
-        //                using (var command = new SqlCommand(sql, connection))
-        //                {
-        //                    command.Parameters.AddWithValue("@id", id);
+            _dbContext.Products.Remove(product);
+            await _dbContext.SaveChangesAsync();
 
-        //                    using (var reader = command.ExecuteReader())
-        //                    {
-        //                        if (reader.Read())
-        //                        {
+            return Ok();
+        }
 
-        //                            product.Id = reader.GetGuid(0);
-        //                            product.Name = reader.GetString(1);
-        //                            product.Description = reader.GetString(2);
-        //                            product.Image = reader.GetString(3);
-        //                            product.CategoryId = reader.GetGuid(4);
-
-        //                        }
-        //                        else
-        //                        {
-        //                            return NotFound();
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        catch (Exception ex) { }
-        //        {
-        //            ModelState.AddModelError("Product", "sorry but we have an exception");
-        //            return BadRequest(ModelState);
-        //        }
-        //        return Ok(product);
-        //    }
-
-        //    [HttpPut]
-        //    public IActionResult UpdateProdcut(int id, ProductDto productDto) 
-        //    {
-        //        try
-        //        {
-        //            using (var connection = new SqlConnection(connectionString))
-        //            {
-        //                connection.Open();
-
-        //                string sql = "Update  Product Set name=@name, Description=@Description, Image=@Image," +
-        //                    " CategoryId=@CategoryId WHERE id=@id";
-        //                using (var command = new SqlCommand(sql, connection))
-        //                {
-        //                    command.Parameters.AddWithValue("@name", productDto.Name);
-        //                    command.Parameters.AddWithValue("@Description", productDto.Description);
-        //                    command.Parameters.AddWithValue("@Image", productDto.Image);
-        //                    command.Parameters.AddWithValue("@CategoryId", productDto.CategoryId);
-
-        //                    command.ExecuteNonQuery();
-
-        //                }
-        //            }
-        //        }
-        //        catch (Exception ex) { }
-        //        {
-        //            ModelState.AddModelError("Product", "sorry but we have an exception");
-        //            return BadRequest(ModelState);
-        //        }
-        //        return Ok();
-        //    }
-
-        //    [HttpDelete("{id}")]
-        //    public IActionResult DeleteProduct(int id)
-        //    {
-        //        try
-        //        {
-        //            using (var connection = new SqlConnection(connectionString))
-        //            {
-        //                connection.Open();
-
-        //                string sql = "DELETE  FROM Product WHERE id=@id";
-        //                using (var command = new SqlCommand(sql, connection))
-        //                {
-        //                    command.Parameters.AddWithValue("@id",id);
-
-        //                    command.ExecuteNonQuery();
-        //                }
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            ModelState.AddModelError("Product", "sorry but we have an exception");
-        //            return BadRequest(ModelState);
-        //        }
-        //        return Ok();
-        //    }
-
-
-
-
-        //    // GET: api/Product
-        //    [HttpGet]
-        //    public async Task<IActionResult> GetAllProducts()
-        //    {
-        //        var products = await _productRepo.GetAllProductsAsync();
-        //        return Ok(products);
-        //    }
-
-        //    // GET: api/Product/{id}
-        //    [HttpGet("{id}")]
-        //    public async Task<IActionResult> GetProductById(Guid id)
-        //    {
-        //        var product = await _productRepo.GetProductByIdAsync(id);
-        //        if (product == null)
-        //        {
-        //            return NotFound();
-        //        }
-        //        return Ok(product);
-        //    }
-
-        //    // POST: api/Product
-        //    [HttpPost]
-        //    public async Task<IActionResult> CreateProduct(Product product)
-        //    {
-        //        var result = await _productRepo.SaveAsync(product);
-        //        if (!result)
-        //        {
-        //            return BadRequest();
-        //        }
-
-        //        return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
-        //    }
-
-        //    // PUT: api/Product/{id}
-        //    [HttpPut("{id}")]
-        //    public async Task<IActionResult> UpdateProduct(Guid id, Product product)
-        //    {
-        //        var existingProduct = await _productRepo.GetProductByIdAsync(id);
-        //        if (existingProduct == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        // Mettre à jour les champs nécessaires
-        //        existingProduct.Name = product.Name;
-        //        existingProduct.Description = product.Description;
-        //        existingProduct.Image = product.Image;
-        //        existingProduct.Barcode = product.Barcode;
-        //        existingProduct.CategoryId = product.CategoryId;
-
-        //        var result = await _productRepo.UpdateAsync(existingProduct);
-        //        if (!result)
-        //        {
-        //            return BadRequest();
-        //        }
-
-        //        return NoContent();
-        //    }
-
-        //    // DELETE: api/Product/{id}
-        //    [HttpDelete("{id}")]
-        //    public async Task<IActionResult> DeleteProduct(Guid id)
-        //    {
-        //        var existingProduct = await _productRepo.GetProductByIdAsync(id);
-        //        if (existingProduct == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        var result = await _productRepo.DeleteAsync(existingProduct);
-        //        if (!result)
-        //        {
-        //            return BadRequest();
-        //        }
-
-        //        return NoContent();
-        //    }
-        
+        private bool ProductExists(Guid id)
+        {
+            return _dbContext.Products.Any(e => e.Id == id);
+        }
     }
+
 }
+
+
+
+
+   /* //  GET: api/Product
+      [HttpGet]
+       public async Task<IActionResult> GetAllProducts()
+       {
+          var products = await _productRepo.GetAllProductsAsync();
+         return Ok(products);
+      }
+
+//        GET: api/Product/{id}
+        [HttpGet("{id}")]
+       public async Task<IActionResult> GetProductById(Guid id)
+        {
+            var product = await _productRepo.GetProductByIdAsync(id);
+           if (product == null)
+          {
+              return NotFound();
+          }
+          return Ok(product);
+        }
+
+        // POST: api/Product
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct(Product product)
+       {
+            var result = await _productRepo.SaveAsync(product);
+           if (!result)
+          {
+               return BadRequest();
+           }
+
+           return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+       }
+
+       // PUT: api/Product/{id}
+        [HttpPut("{id}")]
+       public async Task<IActionResult> UpdateProduct(Guid id, Product product)
+        {
+            var existingProduct = await _productRepo.GetProductByIdAsync(id);
+            if (existingProduct == null)
+            {
+                return NotFound();
+            }
+
+            // Mettre à jour les champs nécessaires
+           existingProduct.Name = product.Name;
+          existingProduct.Description = product.Description;
+           existingProduct.Image = product.Image;
+          existingProduct.Barcode = product.Barcode;
+           existingProduct.CategoryId = product.CategoryId;
+
+           var result = await _productRepo.UpdateAsync(existingProduct);
+           if (!result)
+            {
+               return BadRequest();
+            }
+
+           return NoContent();
+        }
+
+      // DELETE: api/Product/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(Guid id)
+        {
+            var existingProduct = await _productRepo.GetProductByIdAsync(id);
+           if (existingProduct == null)
+           {
+               return NotFound();
+         }
+
+        var result = await _productRepo.DeleteAsync(existingProduct);
+           if (!result)
+           {
+              return BadRequest();
+          }
+
+           return NoContent();
+     }
+
+    */
