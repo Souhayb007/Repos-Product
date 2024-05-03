@@ -1,6 +1,7 @@
 using Api.Enums;
 using Api.Models;
 using Microsoft.AspNetCore.Identity;
+using System;
 
 
 namespace Api.Repos.Fake;
@@ -20,7 +21,7 @@ public class FUserRepo : IUserRepo
             if (i == 0) role = UserRole.Admin;
             else if (i <= 10) role = UserRole.Pharmacist;
             else if (i <= 20) role = UserRole.Deliverer;
-
+            var random = new Random();
             var user = new User
             {
                 Id = Guid.NewGuid(),
@@ -30,8 +31,8 @@ public class FUserRepo : IUserRepo
                 Address = $"Address {i}",
                 Username = $"Username {i}",
                 Role = role,
-                PharmacyId = role == UserRole.Pharmacist ? Guid.NewGuid() : null, // TODO: Get from pharmacy repo
-                CostPerKM = role == UserRole.Deliverer ? new Random().Next(1, 10) : null
+                PharmacyId = role == UserRole.Pharmacist ? Guid.NewGuid() : (Guid?)null,
+                CostPerKM = role == UserRole.Deliverer ? random.Next(1, 10) : (decimal)null
             };
 
             user.Password = _passwordHasher.HashPassword(user, $"Password {i}");

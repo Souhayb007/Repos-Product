@@ -1,3 +1,4 @@
+using Api.Data.Migrations;
 using Api.Dtos;
 using Api.Enums;
 using Api.Models;
@@ -19,9 +20,9 @@ namespace Api.Controllers
     [Authorize]
     public class UserController : ControllerBase
     {
-        private readonly MyContext _dbContext;
+        private readonly PharmacyDbContext _dbContext;
 
-        public UserController(MyContext dbContext)
+        public UserController(PharmacyDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -192,8 +193,6 @@ public class UserController : Controller
     }
 =======
     }*/
->>>>>>> a730b5c73918bc10d205dde2f80119db6dfe952d
-
 
 
 /* [HttpGet("{role}")]

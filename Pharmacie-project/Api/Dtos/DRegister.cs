@@ -36,6 +36,7 @@ public class DRegister
     public UserRole Role { get; set; }
     
     public Guid? PharmacyId { get; set; }
-    
-    public int? CostPerKM { get; set; }
+
+    [Required]
+    public decimal CostPerKM { get; set; }
 }

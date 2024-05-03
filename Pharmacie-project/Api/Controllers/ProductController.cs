@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Api.Data.Migrations;
 
 namespace Api.Controllers
 {
@@ -13,25 +14,32 @@ namespace Api.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly MyContext _dbContext;
+        private readonly PharmacyDbContext _dbContext;
 
-        public ProductController(MyContext dbContext)
+        public ProductController(PharmacyDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
         // GET: api/Product
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<IActionResult> GetProducts()
         {
             var products = await _dbContext.Products.ToListAsync();
             if (products == null || !products.Any())
             {
-                return NotFound();
+                return NotFound("");
             }
+            List<Product> Prds = await _dbContext.Products.ToListAsync();
+            return Ok(Prds);
+        }
+        [HttpGet]
+        public IActionResult GetCatalogue()
+        {
+
+            var products = _dbContext.Products.Select(p => new Product(p)).ToList();
             return Ok(products);
         }
-
         // GET: api/Product/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(Guid id)

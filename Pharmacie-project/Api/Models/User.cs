@@ -19,5 +19,5 @@ public class User
     public UserRole Role { get; set; }
 
     public Guid? PharmacyId { get; set; }
-    public decimal? CostPerKM { get; set; }
+    public decimal CostPerKM { get; set; }
 }

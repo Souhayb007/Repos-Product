@@ -1,17 +1,17 @@
-﻿using Api.Models;
+﻿using Api.Data.Migrations;
+using Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Entity;
-
 namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly MyContext _DbContext;
-        public CategoryController(MyContext dbContext)
+        private readonly PharmacyDbContext _DbContext;
+        public CategoryController(PharmacyDbContext dbContext)
         {
             _DbContext = dbContext;
         }
@@ -45,14 +45,14 @@ namespace Api.Controllers
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category); ;
         }
         [HttpPut]
-        public async Task<ActionResult> PutCategory(int id, Category category)
+        public async Task<ActionResult> PutCategory(Guid id, Category category)
         {
             if (id != category.Id)
             {
                 return BadRequest();
 
             }
-            _DbContext.Entry(category).State = EntityState.Modified;
+            _DbContext.Entry(category).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             try
             {
                 await _DbContext.SaveChangesAsync();
@@ -71,21 +71,22 @@ namespace Api.Controllers
             }
             return Ok();
         }
-        private bool CategoryAvailable(int id)
+        private bool CategoryAvailable(Guid id)
         {
             return (_DbContext.Categories?.Any(x => x.Id == id)).GetValueOrDefault();
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteCategory(int id)
+        public async Task<ActionResult> DeleteCategory(Guid id)
         {
-            if (_DbContext.Categories == null)
+            Category ct = await _DbContext.Categories.Where(c=> c.Id==id).FirstAsync();
+            if (ct == null)
             {
                 return NotFound();
             }
-            _DbContext.Categories.Remove(Category);
+            _DbContext.Categories.Remove(ct);
             await _DbContext.SaveChangesAsync();
-            return Ok();
+            return NoContent();
         }
     }
 }

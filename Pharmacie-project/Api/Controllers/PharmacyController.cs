@@ -1,4 +1,5 @@
-﻿using Api.Dtos;
+﻿using Api.Data.Migrations;
+using Api.Dtos;
 using Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,9 @@ namespace Api.Controllers
     [ApiController]
     public class PharmacyController : ControllerBase
     {
-        private readonly MyContext db;
+        private readonly PharmacyDbContext db;
 
-        public PharmacyController(MyContext db) { this.db = db; }
+        public PharmacyController(PharmacyDbContext db) { this.db = db; }
 
         [HttpGet]
         public async Task<List<Pharmacy>> GetAllPharmacies() 

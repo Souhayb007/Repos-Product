@@ -12,7 +12,7 @@ public class PharmacyProduct
     public Product Product { get; set; }
     public Guid ProductId { get; set; }
 
-    public ICollection<CommandeProduct> CommandeProduct { get; set; } = null!;
+    public ICollection<CommandeProduct> CommandeProduct { get; set; } 
     public decimal Price { get; set; }
 
     public bool Available { get; set; }
