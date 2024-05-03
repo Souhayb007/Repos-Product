@@ -114,6 +114,17 @@ namespace Api.Controllers
         {
             return _dbContext.Products.Any(e => e.Id == id);
         }
+
+        [HttpGet("ByCategory/{CategoryId}")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductsByCategory(Guid CategoryId)
+        {
+            var products = await _dbContext.Products.Where(p => p.CategoryId == CategoryId).ToListAsync();
+            if (products == null || !products.Any())
+            {
+                return NotFound();
+            }
+            return Ok(products);
+        }
     }
 
 }
