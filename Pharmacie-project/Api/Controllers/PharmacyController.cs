@@ -50,7 +50,7 @@ namespace Api.Controllers
             {
                 return Ok(p);
             }
-            return NotFound($"La Pharmacie Avec cet Nom {nom} N'Existe Pas ");
+            return NotFound($"La Pharmacie Avec cet Nom {nom} N'Existe Pas !");
         }
         [HttpPut]
           public async Task<IActionResult> Modifier(Guid Id,DPharmacy pharma)

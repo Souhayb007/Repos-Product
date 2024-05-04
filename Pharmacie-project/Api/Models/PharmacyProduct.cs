@@ -1,3 +1,4 @@
+using Api.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Models;
@@ -15,5 +16,5 @@ public class PharmacyProduct
     public ICollection<CommandeProduct> CommandeProduct { get; set; } 
     public decimal Price { get; set; }
 
-    public bool Available { get; set; }
+    public Etat Available { get; set; }
 }
