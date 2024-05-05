@@ -7,10 +7,6 @@ using APi.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
@@ -111,10 +107,7 @@ namespace Api.Controllers
             }
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
-          
-        
-
-        // PUT: api/User/5
+         // PUT: api/User/5
         [HttpPut("{id}")]
         [Admin]
         public async Task<IActionResult> PutUser(Guid id, User user)
@@ -166,6 +159,46 @@ namespace Api.Controllers
         {
             return _dbContext.Users.Any(e => e.Id == id);
         }
+
+
+        [HttpPost("{id}/Activate")]
+        [Admin]
+        public async Task<IActionResult> ActivateUser(Guid id)
+        {
+            var user = await _dbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            
+            if (user.IsActive) // Vérifiez si l'utilisateur est déjà activé
+            {
+                return BadRequest("L'utilisateur est déjà activé.");
+            }
+
+            user.IsActive = true;   // Activez l'utilisateur 
+
+            _dbContext.Entry(user).State = EntityState.Modified;
+            await _dbContext.SaveChangesAsync();
+
+            return Ok("Compte activé avec succès.");
+        }
+
+        [HttpGet("UnactivatedAccounts")]
+        [Admin]
+        public async Task<ActionResult<IEnumerable<User>>> GetUnactivatedAccounts()
+        {
+            var unactivatedAccounts = await _dbContext.Users.Where(u => !u.IsActive).ToListAsync();
+
+            if (unactivatedAccounts == null || !unactivatedAccounts.Any())
+            {
+                return NotFound("Aucun compte utilisateur non activé trouvé.");
+            }
+
+            return Ok(unactivatedAccounts);
+        }
+
     }
 }
 
