@@ -28,6 +28,7 @@ namespace Api.Controllers
         {
             _userRepo = userRepo;
         }
+
         // GET: api/User
         [HttpGet]
         [Admin]
@@ -85,6 +86,7 @@ namespace Api.Controllers
 
             return Ok(users);
         }
+
         [HttpPost]
         [Admin]
         public async Task<IActionResult> CreateUser(DRegister register)
@@ -107,6 +109,7 @@ namespace Api.Controllers
             }
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
+
          // PUT: api/User/5
         [HttpPut("{id}")]
         [Admin]

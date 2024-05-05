@@ -1,5 +1,6 @@
 ﻿using Api.Data.Migrations;
 using Api.Models;
+using APi.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,8 @@ namespace Api.Controllers
         }
 
         [HttpGet]
+        [Admin]
+        [Pharmacy]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategory()
         {
             if (_DbContext.Categories == null)
@@ -25,13 +28,17 @@ namespace Api.Controllers
             }
             return await _DbContext.Categories.ToListAsync();
         }
-        [HttpPost("{id}")]
+
+        [HttpGet("{id}")]
+        [Admin] // Contrôle d'accès pour le rôle "Admin"
+        [Pharmacy] // Contrôle d'accès pour le rôle "Pharmacie"
         public async Task<ActionResult<Category>> GetCategory(int id)
         {
             if (_DbContext.Categories == null)
             {
                 return NotFound();
             }
+
             var category = await _DbContext.Categories.FindAsync(id);
             if (category == null)
             {
@@ -39,12 +46,18 @@ namespace Api.Controllers
             }
             return category;
         }
+
+        [HttpPost]
+        [Admin] 
+        [Pharmacy] 
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
             _DbContext.Categories.Add(category);
-            return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category); ;
+            return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
         }
+
         [HttpPut]
+        [Admin] 
         public async Task<ActionResult> PutCategory(Guid id, Category category)
         {
             if (id != category.Id)
@@ -76,17 +89,6 @@ namespace Api.Controllers
             return (_DbContext.Categories?.Any(x => x.Id == id)).GetValueOrDefault();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteCategory(Guid id)
-        {
-            Category ct = await _DbContext.Categories.Where(c=> c.Id==id).FirstAsync();
-            if (ct == null)
-            {
-                return NotFound();
-            }
-            _DbContext.Categories.Remove(ct);
-            await _DbContext.SaveChangesAsync();
-            return NoContent();
+      
         }
     }
-}

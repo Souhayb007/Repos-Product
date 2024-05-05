@@ -23,6 +23,7 @@ namespace Api.Controllers
 
         // GET: api/Product
         [HttpGet]
+        
         public async Task<IActionResult> GetProducts()
         {
             var products = await _dbContext.Products.ToListAsync();

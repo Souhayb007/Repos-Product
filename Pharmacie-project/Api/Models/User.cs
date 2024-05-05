@@ -20,4 +20,15 @@ public class User
 
     public Guid? PharmacyId { get; set; }
     public decimal CostPerKM { get; set; }
+    public bool valider { get; set; }
+    public  DateTime? verifiedAt { get; set; }
+
+    public bool IsActive { get; set; }
+
+    public bool IsUserActive()
+    {
+        return IsActive;
+    }
 }
+
+
