@@ -23,9 +23,9 @@ public class AdminAttribute : Attribute, IAsyncActionFilter
                 return;
             }
 
-            // Before
+            
             await next();
-            // After
+         
         }
     }
 }

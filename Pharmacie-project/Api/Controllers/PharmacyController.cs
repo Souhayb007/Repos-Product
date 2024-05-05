@@ -1,6 +1,7 @@
 ﻿using Api.Data.Migrations;
 using Api.Dtos;
 using Api.Models;
+using APi.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,9 @@ namespace Api.Controllers
         public PharmacyController(PharmacyDbContext db) { this.db = db; }
 
         [HttpGet]
+        [Pharmacy]
+        [Admin]
+
         public async Task<List<Pharmacy>> GetAllPharmacies() 
         {
             return await this.db.Pharmacies.ToListAsync();

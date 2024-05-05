@@ -5,5 +5,6 @@ public enum UserRole
     Admin,
     Deliverer,
     Pharmacist,
-    Client
+    Client,
+    Pharmacy
 }
