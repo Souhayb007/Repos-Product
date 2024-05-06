@@ -5,6 +5,7 @@ using APi.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Entity;
 
 namespace Api.Controllers
 {
@@ -24,29 +25,29 @@ namespace Api.Controllers
         {
             return await this.db.Pharmacies.ToListAsync();
         }
-        [HttpPost]
-        public async Task<ActionResult<Pharmacy>> AjouterPharmacy(DPharmacy pharmacy)
-        {
-            var p = await db.Pharmacies.FirstOrDefaultAsync(pr => pr.Name == pharmacy.Name);
-            if(p == null)
-            {
-                var Phar = new Pharmacy {
-                    Name = pharmacy.Name,
-                    Address = pharmacy.Address,
-                    Email = pharmacy.Email,
-                    Latitude = pharmacy.Latitude,
-                    Longitude = pharmacy.Longitude           
-                };
-                db.Pharmacies.Add(Phar);
-                await db.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetByName), new { Name = pharmacy.Name},pharmacy);
-            }
+        //[HttpPost]
+        //public async Task<ActionResult<Pharmacy>> AjouterPharmacy(DPharmacy pharmacy)
+        //{
+        //    var p = await db.Pharmacies.FirstOrDefaultAsync(pr => pr.Name == pharmacy.Name);
+        //    if(p == null)
+        //    {
+        //        var Phar = new Pharmacy {
+        //            Name = pharmacy.Name,
+        //            Address = pharmacy.Address,
+        //            Email = pharmacy.Email,
+        //            Latitude = pharmacy.Latitude,
+        //            Longitude = pharmacy.Longitude           
+        //        };
+        //        db.Pharmacies.Add(Phar);
+        //        await db.SaveChangesAsync();
+        //        return CreatedAtAction(nameof(GetByName), new { Name = pharmacy.Name},pharmacy);
+        //    }
 
 
             
-            return Conflict($" La Pharmacie Avec cet Nom {pharmacy.Name} Deja Connue ");
-        }
-        [HttpPost]
+        //    return Conflict($" La Pharmacie Avec cet Nom {pharmacy.Name} Deja Connue ");
+        //}
+        [HttpGet]
         public async Task<ActionResult<Pharmacy>> GetByName(string nom)
         {
             Pharmacy p = await db.Pharmacies.FirstOrDefaultAsync(pr => pr.Name == nom);
@@ -79,7 +80,7 @@ namespace Api.Controllers
             await db.SaveChangesAsync();
             return NoContent();
         }
-        [HttpDelete]
+        [HttpDelete("{nom}")]
         public async Task<ActionResult<Pharmacy>> DeleteByName(string nom)
         {
             Pharmacy p = await db.Pharmacies.FirstOrDefaultAsync(pr => pr.Name == nom);
@@ -103,6 +104,35 @@ namespace Api.Controllers
             }
             return NotFound($"La Pharmacie Avec cet Id {Id} N'Existe Pas ");
         }
+        
+        [HttpDelete("{Id}")]
+        [Admin]
+        public async Task<ActionResult<Pharmacy>> DeleteBiId(Guid Id)
+        {
+            // Recherchez le PharmacyProduct par son identifiant
+            var pharmacyProduct = await db.PharmacyProducts.FindAsync(Id);
+            if (pharmacyProduct == null)
+            {
+                return NotFound($"La Pharmacie Avec cet Id {Id} N'Existe Pas !");
+            }
 
+            try
+            {
+                var idPharmacyProducts = db.PharmacyProducts.Where(ip => ip.Id == Id);
+                Pharmacy p = await db.Pharmacies.FindAsync(Id);
+                db.PharmacyProducts.RemoveRange(idPharmacyProducts);
+                db.Pharmacies.Remove(p);
+              
+                await db.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+              
+                return StatusCode(500, $"Une erreur s'est produite lors de la suppression des IdPharmacyProduct: {ex.Message}");
+            }
+     
+        }
     }
 }

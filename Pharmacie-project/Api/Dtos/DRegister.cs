@@ -38,5 +38,5 @@ public class DRegister
     public Guid? PharmacyId { get; set; }
 
     [Required]
-    public decimal CostPerKM { get; set; }
+    public int CostPerKM { get; set; }
 }

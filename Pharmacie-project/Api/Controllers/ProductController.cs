@@ -7,11 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Api.Data.Migrations;
+using APi.Filters;
 
 namespace Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Admin]
+    [Pharmacy]
     public class ProductController : ControllerBase
     {
         private readonly PharmacyDbContext _dbContext;
@@ -34,13 +37,7 @@ namespace Api.Controllers
             List<Product> Prds = await _dbContext.Products.ToListAsync();
             return Ok(Prds);
         }
-        [HttpGet]
-        public IActionResult GetCatalogue()
-        {
-
-            var products = _dbContext.Products.Select(p => new Product(p)).ToList();
-            return Ok(products);
-        }
+      
         // GET: api/Product/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(Guid id)
@@ -93,24 +90,7 @@ namespace Api.Controllers
             }
 
             return NoContent();
-        }
-
-        // DELETE: api/Product/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(Guid id)
-        {
-            var product = await _dbContext.Products.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            _dbContext.Products.Remove(product);
-            await _dbContext.SaveChangesAsync();
-
-            return Ok();
-        }
-
+        }   
         private bool ProductExists(Guid id)
         {
             return _dbContext.Products.Any(e => e.Id == id);

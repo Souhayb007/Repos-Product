@@ -1,5 +1,6 @@
 ﻿using Api.Data.Migrations;
 using Api.Dtos;
+using Api.Enums;
 using Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ namespace Api.Controllers
         public async Task<ActionResult<PharmacyProduct>> AjouterPharmacyProduct(DPharmacyProduct pharmacy)
         {
             var p = await db.PharmacyProducts.FirstOrDefaultAsync(pr => pr.PharmacyId == pharmacy.PharmacyId && pr.ProductId == pharmacy.ProductId);
-         
+
             if (p == null)
             {
                 var Phar = new PharmacyProduct
@@ -37,7 +38,7 @@ namespace Api.Controllers
 
                 db.PharmacyProducts.Add(Phar);
                 await db.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetById), new { Id = Phar.Id}, Phar);
+                return CreatedAtAction(nameof(GetById), new { Id = Phar.Id }, Phar);
             }
 
 
@@ -53,6 +54,29 @@ namespace Api.Controllers
                 return Ok(p);
             }
             return NotFound($"La Pharmacie Products Avec cet Id {Id} N'Existe Pas !");
+        }
+        public async Task<PharmacyProduct> VerifierPharmacyProduct(Guid Id)
+        {
+            PharmacyProduct p = await db.PharmacyProducts.Where(p => p.Id == Id).FirstAsync();
+            if (p == null)
+            { return null; }
+            return p;
+        }
+
+        [HttpPut("{Id}")]
+        public async Task<IActionResult> ChangerAvailability(Guid Id)
+        {
+            PharmacyProduct av = await VerifierPharmacyProduct(Id);
+            if (av == null)
+            {
+                HttpContext.Response.Redirect("/PharmacyProduct/AjouterPharmacyProduct");
+                return NotFound($"La Pharmacy Product Doesn't Exist with this Id {Id}");
+
+            }
+            if (av.Id != Id)
+            { return Conflict($"La Pharmacy Product Exist Mais Il Y A un Conflit with this Id {Id}"); }
+            av.Available = Etat.Disponible;
+            return NoContent();
         }
         [HttpPut]
         public async Task<IActionResult> ModifierPharmacyProduct(Guid Id, DPharmacyProduct pharmacy)

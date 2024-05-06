@@ -1,6 +1,7 @@
 ﻿using Api.Data.Migrations;
 using Api.Dtos;
 using Api.Models;
+using APi.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.Entity;
