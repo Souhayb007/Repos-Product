@@ -34,13 +34,6 @@ namespace Api.Controllers
             List<Product> Prds = await _dbContext.Products.ToListAsync();
             return Ok(Prds);
         }
-        [HttpGet]
-        public IActionResult GetCatalogue()
-        {
-
-            var products = _dbContext.Products.Select(p => new Product(p)).ToList();
-            return Ok(products);
-        }
         // GET: api/Product/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(Guid id)

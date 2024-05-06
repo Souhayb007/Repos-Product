@@ -32,7 +32,7 @@ public class FUserRepo : IUserRepo
                 Username = $"Username {i}",
                 Role = role,
                 PharmacyId = role == UserRole.Pharmacist ? Guid.NewGuid() : (Guid?)null,
-                CostPerKM = role == UserRole.Deliverer ? random.Next(1, 10) : (decimal)null
+                CostPerKM = role == UserRole.Deliverer ? new Random().Next(1, 10) : null
             };
 
             user.Password = _passwordHasher.HashPassword(user, $"Password {i}");
